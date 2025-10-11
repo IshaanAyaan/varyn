@@ -34,7 +34,7 @@ export default function DashboardPage(){
       <div className="card" style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
         <div>
           <div className="font-semibold">System Status</div>
-          <div className="text-sm text-gray-600">Gemini API key</div>
+          <div className="text-sm text-gray-600">Custom YOLOv8 Model</div>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:'.5rem'}}>
           <span style={{display:'inline-block',width:10,height:10,borderRadius:9999,background: apiReady? '#22c55e' : apiReady===false? '#ef4444' : '#f59e0b'}} />
