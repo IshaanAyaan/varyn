@@ -206,8 +206,8 @@ export default function DashboardPage() {
         {apiReady === null
           ? "Checking AI…"
           : apiReady
-          ? "Gemini AI connected"
-          : "Offline preview mode — add a Gemini key for real analysis"}
+          ? "AI connected"
+          : "AI unavailable"}
       </div>
     </div>
   );

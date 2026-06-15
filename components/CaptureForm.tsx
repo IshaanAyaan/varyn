@@ -110,8 +110,7 @@ export default function CaptureForm({ onSaved }: Props) {
               onChange={onPick}
             />
             <div className="text-sm text-gray-600" style={{ marginTop: ".35rem" }}>
-              On a phone this opens the camera. Photos are downscaled and stored
-              only on this device.
+              On a phone this opens the camera directly.
             </div>
           </div>
           <div>

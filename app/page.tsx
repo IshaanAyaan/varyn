@@ -32,8 +32,7 @@ export default function Home() {
       </section>
 
       <p className="text-sm text-gray-600" style={{ margin: 0 }}>
-        Private by design — your photos stay in your browser. Informational only,
-        not a diagnosis.
+        Informational only, not a diagnosis.
       </p>
     </div>
   );
