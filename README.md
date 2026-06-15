@@ -1,58 +1,77 @@
-# VARYN
+# Varyn — Skin Symptom Tracker
 
-A minimal Next.js 14 app with local-only signup/login and a simple dashboard. Now supports optional Gemini-based image analysis for hand scans with structured metrics and severity classification.
+Photograph a skin spot, get an AI-written description and severity reading, and
+keep a private dated journal so you can see how it changes over time — then hand
+your doctor a clean, printable report.
+
+Built with Next.js 14 (App Router). Image analysis uses Google Gemini, with a
+built-in offline simulator so the app works even without a key.
 
 ---
 
-## Quickstart (Local)
+## Quickstart (local)
 
 ```bash
-pnpm i   # or npm i / yarn
-pnpm dev
+npm install
+npm run dev
 ```
+
 Visit http://localhost:3000
 
 ---
 
-## Auth flow (demo-only)
+## How it works
 
-- Register: stores email/password in `sessionStorage` (`luxen_users`).
-- Login: sets `sessionStorage` → `luxen_user`.
-- Sign out: clears the session entry. Ephemeral, for demo only.
-- `/signup` redirects to `/register`.
+1. **Sign up / sign in** — demo-only auth stored in `sessionStorage`.
+2. **New scan** (`/capture`) — take or upload a photo, pick a body region, give
+   the spot a label (e.g. "Mole near wrist"), add symptom notes, and analyze.
+   `POST /api/analyze` returns a structured, non-diagnostic observation.
+3. **Save to journal** — the photo is downscaled and the entry is stored in
+   `localStorage`, scoped per signed-in user, so it persists across sessions.
+4. **Timeline** (`/timeline`) — entries are grouped by spot (region + label),
+   charted by severity over time, with a worsening / improving / stable trend.
+5. **Dashboard** (`/dashboard`) — overview, stats, and automatic **flags**:
+   high-severity spots, worsening trends, and recurring observations.
+6. **Report** (`/report`) — a printable, doctor-ready summary of every tracked
+   spot, its image timeline, and flagged concerns. Use **Print / Save PDF**.
+
+### What the analysis returns
+
+- `description` — plain-language summary of what's visible
+- `label` — Clear / Mild / Moderate / Concerning
+- `severityScore` — 0–100 (visual prominence, **not** a diagnosis)
+- `attributes` — redness, scaling, texture, color variation, size estimate (mm)
+- `concernFlags` — warning signs worth showing a clinician
+- `recommendations` + `disclaimer`
+
+### Pattern detection
+
+Done client-side over saved entries, grouped by region + spot label:
+
+- **Worsening / improving** when severity shifts ≥12 points across scans
+- **High severity** alert when the latest scan ≥70
+- **Recurring observations** when a flag appears in ≥2 scans
 
 ---
-
-## Dashboard
-
-- Upload a hand image and add notes.
-- `POST /api/analyze` returns structured metrics when `GEMINI_API_KEY` is set, using Gemini Flash; otherwise a local offline fallback simulates results.
-- Metrics returned and charted:
-  - Lesion Area (cm²)
-  - Redness Level (0-10)
-  - Scaling Level (0-10)
-  - Texture Score (0-10)
-  - Color Variation (%)
-  - Severity Score (0-100)
-  - Ambient Temp (°C)
-  - Humidity (%)
-  - Skin Hydration (AU)
-  - Severity label: No issues / Moderate / Severe
-
-The latest scan shows a metrics bar chart; aggregate cards include per-day counts and label distribution.
-
-Safety: Outputs are informational only and are not medical advice. Consult a qualified clinician for concerns.
 
 ## Configuration
 
-Set environment variables in `.env`:
+Set environment variables (e.g. in Vercel or a local `.env`):
 
 ```
 GEMINI_API_KEY=your_google_api_key
-# Optional: override model id
+# Optional: override model id (default gemini-2.5-flash)
 GEMINI_MODEL=gemini-2.5-flash
 ```
 
+Without a key, `/api/analyze` returns a deterministic offline preview so the
+full flow still works.
+
 ---
 
-Generated: 2025-10-11
+## Privacy & safety
+
+- Photos and notes never leave the browser except the single image sent to the
+  Gemini API for analysis; saved entries live only in this browser's storage.
+- Varyn provides **informational observations only and cannot diagnose medical
+  conditions**. Always consult a qualified clinician.

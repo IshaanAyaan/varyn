@@ -122,3 +122,20 @@ nav a:hover { color: #0f172a; text-decoration: underline; }
 }
 .caution-title { display: flex; align-items: center; gap: .5rem; font-weight: 600; color: #92400e; }
 .caution-subtle { color: #6b7280; font-size: 0.85rem; }
+
+select.input { appearance: auto; }
+
+/* Report + print */
+.report-sheet { color: #0f172a; }
+.report-sheet h1 { font-size: 1.4rem; }
+.report-sheet h2 { font-size: 1.05rem; margin: 0 0 .25rem; }
+.report-sheet h3 { font-size: 1rem; }
+
+@media print {
+  .hdr, footer, .no-print { display: none !important; }
+  body { background: white !important; }
+  main { padding: 0 !important; max-width: none !important; }
+  .card { box-shadow: none !important; border: none !important; background: white !important; backdrop-filter: none !important; }
+  .report-sheet { padding: 0 !important; }
+  a { text-decoration: none !important; color: inherit !important; }
+}
