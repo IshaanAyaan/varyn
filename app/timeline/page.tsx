@@ -119,7 +119,7 @@ function SpotGroup({
           </div>
         </div>
         <span
-          className="severity-badge"
+          className="badge"
           style={{ color: trend.color, borderColor: trend.color }}
         >
           {trend.emoji} {trend.label}

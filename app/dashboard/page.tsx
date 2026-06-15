@@ -66,172 +66,174 @@ export default function DashboardPage() {
 
   return (
     <div className="grid" style={{ gap: "1.25rem" }}>
-      <div className="card" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: ".75rem" }}>
+      {/* Header */}
+      <div className="row between wrap">
         <div>
-          <h1 className="text-xl font-semibold">Dashboard</h1>
-          <div className="text-sm text-gray-600">Signed in as {user.email}</div>
+          <h1 className="text-xl font-semibold" style={{ margin: 0 }}>
+            {greeting()}, {user.name || user.email.split("@")[0]}
+          </h1>
+          <div className="text-sm text-gray-600">Here's your skin overview.</div>
         </div>
-        <div style={{ display: "flex", gap: ".5rem", alignItems: "center" }}>
-          <Link href="/capture" className="btn">
-            + New scan
-          </Link>
-          <button
-            className="btn ghost"
-            onClick={() => {
-              sessionStorage.removeItem("varyn_user");
-              window.location.href = "/login";
-            }}
-          >
-            Sign out
-          </button>
-        </div>
+        <Link href="/capture" className="btn">
+          + New scan
+        </Link>
       </div>
 
-      {/* Status + quick stats */}
-      <div className="grid grid-2" style={{ gap: "1rem" }}>
-        <StatCard label="Total scans" value={entries.length} />
-        <StatCard label="Spots tracked" value={groups.length} />
-      </div>
-
-      <div className="card" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div>
-          <div className="font-semibold">AI image analysis</div>
-          <div className="text-sm text-gray-600">
-            {apiReady === null
-              ? "Checking…"
-              : apiReady
-              ? "Gemini connected"
-              : "No Gemini key — using offline preview"}
-          </div>
-        </div>
-        <span
-          style={{
-            display: "inline-block",
-            width: 10,
-            height: 10,
-            borderRadius: 9999,
-            background:
-              apiReady === null ? "#f59e0b" : apiReady ? "#22c55e" : "#f59e0b",
-          }}
+      {/* Stats */}
+      <div className="grid grid-3" style={{ gap: "1rem" }}>
+        <StatCard value={entries.length} label="Scans logged" />
+        <StatCard value={groups.length} label="Spots tracked" />
+        <StatCard
+          value={alerts.filter((a) => a.level === "high").length}
+          label="Active flags"
+          accent={alerts.some((a) => a.level === "high") ? "var(--concerning)" : undefined}
         />
       </div>
 
-      {/* Alerts / flagged */}
-      <div className="card">
-        <h2 className="font-semibold" style={{ marginTop: 0 }}>
-          Flagged & patterns
-        </h2>
-        {alerts.length === 0 ? (
-          <p className="text-sm text-gray-600" style={{ margin: 0 }}>
-            Nothing flagged yet. Re-scan the same spot over time so Varyn can
-            detect changes.
-          </p>
-        ) : (
-          <div className="grid" style={{ gap: ".5rem" }}>
-            {alerts.map((a, i) => (
-              <div
-                key={i}
-                className={a.level === "high" ? "caution-card" : "card"}
-                style={
-                  a.level === "high"
-                    ? { borderLeftColor: "#ef4444", borderLeft: "4px solid #ef4444" }
-                    : { borderLeft: "4px solid #f59e0b" }
-                }
-              >
-                <div style={{ fontWeight: 600 }}>
-                  {a.level === "high" ? "🚩 " : "👀 "}
-                  {a.title}
-                </div>
-                <div className="text-sm text-gray-700">{a.detail}</div>
-              </div>
-            ))}
-            <Link href="/report" className="text-sm" style={{ textDecoration: "underline" }}>
-              Build a doctor-ready report →
-            </Link>
-          </div>
-        )}
-      </div>
-
-      {/* Activity chart */}
-      {entries.length > 0 && (
-        <div className="card">
-          <h3 className="font-semibold" style={{ marginTop: 0 }}>
-            Scans per day
-          </h3>
-          <div style={{ width: "100%", height: 240 }}>
-            <ResponsiveContainer>
-              <BarChart data={byDay}>
-                <XAxis dataKey="day" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Bar dataKey="count" fill="#7c3aed" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      )}
-
-      {/* Recent entries */}
-      <div className="card">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h2 className="font-semibold" style={{ margin: 0 }}>
-            Recent scans
+      {/* Empty state */}
+      {entries.length === 0 ? (
+        <div className="card" style={{ textAlign: "center", padding: "2.5rem 1.5rem" }}>
+          <div style={{ fontSize: "2rem" }}>📷</div>
+          <h2 className="font-semibold" style={{ margin: ".5rem 0 .25rem" }}>
+            No scans yet
           </h2>
-          <Link href="/timeline" className="text-sm" style={{ textDecoration: "underline" }}>
-            View timeline →
+          <p className="text-sm text-gray-600" style={{ maxWidth: 360, margin: "0 auto 1.1rem" }}>
+            Take a photo of a spot, rash, or mole. Varyn describes it and starts
+            tracking how it changes over time.
+          </p>
+          <Link href="/capture" className="btn">
+            Take your first photo
           </Link>
         </div>
-        {entries.length === 0 ? (
-          <p className="text-sm text-gray-600">
-            No scans yet.{" "}
-            <Link href="/capture" style={{ textDecoration: "underline" }}>
-              Take your first photo
-            </Link>
-            .
-          </p>
-        ) : (
-          <div className="grid grid-2" style={{ gap: ".75rem", marginTop: ".75rem" }}>
-            {entries.slice(0, 4).map((e) => (
-              <div key={e.id} style={{ display: "flex", gap: ".75rem", alignItems: "center" }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={e.imageThumb}
-                  alt="scan"
-                  style={{ width: 64, height: 64, objectFit: "cover", borderRadius: ".6rem" }}
-                />
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontWeight: 600 }}>
-                    {e.region}
-                    {e.spotLabel ? ` — ${e.spotLabel}` : ""}
+      ) : (
+        <>
+          {/* Flags */}
+          <div className="card">
+            <div className="row between" style={{ marginBottom: ".75rem" }}>
+              <h2 className="font-semibold" style={{ margin: 0 }}>
+                Flagged & patterns
+              </h2>
+              <Link href="/report" className="text-sm" style={{ color: "var(--primary)", fontWeight: 600 }}>
+                Build report →
+              </Link>
+            </div>
+            {alerts.length === 0 ? (
+              <p className="text-sm text-gray-600" style={{ margin: 0 }}>
+                Nothing flagged. Re-scan the same spot over time so Varyn can spot
+                changes.
+              </p>
+            ) : (
+              <div className="grid" style={{ gap: ".5rem" }}>
+                {alerts.map((a, i) => (
+                  <div key={i} className={`caution-card ${a.level === "high" ? "flag" : ""}`}>
+                    <div className="caution-title">
+                      {a.level === "high" ? "🚩" : "👀"} {a.title}
+                    </div>
+                    <div className="text-sm text-gray-600" style={{ marginTop: ".15rem" }}>
+                      {a.detail}
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600">
-                    {new Date(e.at).toLocaleString()}
-                  </div>
-                  <div style={{ display: "flex", gap: ".4rem", alignItems: "center", marginTop: ".2rem" }}>
-                    <span
-                      className="severity-badge"
-                      style={{ color: labelColor(e.analysis.label), fontSize: ".8rem" }}
-                    >
-                      {e.analysis.label}
-                    </span>
-                    <span style={{ fontSize: ".8rem", color: severityColor(e.analysis.severityScore) }}>
-                      {Math.round(e.analysis.severityScore)}/100
-                    </span>
-                  </div>
-                </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        )}
+
+          {/* Activity */}
+          <div className="grid grid-2" style={{ gap: "1rem" }}>
+            <div className="card">
+              <h3 className="font-semibold" style={{ marginTop: 0 }}>
+                Scans per day
+              </h3>
+              <div style={{ width: "100%", height: 200 }}>
+                <ResponsiveContainer>
+                  <BarChart data={byDay}>
+                    <XAxis dataKey="day" tickLine={false} axisLine={false} />
+                    <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={24} />
+                    <Tooltip cursor={{ fill: "var(--surface-2)" }} />
+                    <Bar dataKey="count" fill="var(--primary)" radius={[5, 5, 0, 0]} maxBarSize={36} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Recent */}
+            <div className="card">
+              <div className="row between" style={{ marginBottom: ".5rem" }}>
+                <h3 className="font-semibold" style={{ margin: 0 }}>
+                  Recent
+                </h3>
+                <Link href="/timeline" className="text-sm" style={{ color: "var(--primary)", fontWeight: 600 }}>
+                  Timeline →
+                </Link>
+              </div>
+              <div className="grid" style={{ gap: ".6rem" }}>
+                {entries.slice(0, 3).map((e) => (
+                  <div key={e.id} className="row" style={{ gap: ".7rem" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={e.imageThumb}
+                      alt="scan"
+                      style={{ width: 52, height: 52, objectFit: "cover", borderRadius: 10, flex: "0 0 auto" }}
+                    />
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div className="font-semibold" style={{ fontSize: ".92rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {e.region}
+                        {e.spotLabel ? ` — ${e.spotLabel}` : ""}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {new Date(e.at).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <span className="badge" style={{ color: labelColor(e.analysis.label) }}>
+                      {Math.round(e.analysis.severityScore)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* AI status footer chip */}
+      <div className="row" style={{ gap: ".5rem", color: "var(--muted)", fontSize: ".82rem" }}>
+        <span
+          style={{
+            width: 8, height: 8, borderRadius: "50%",
+            background: apiReady === null ? "var(--mild)" : apiReady ? "var(--clear)" : "var(--mild)",
+          }}
+        />
+        {apiReady === null
+          ? "Checking AI…"
+          : apiReady
+          ? "Gemini AI connected"
+          : "Offline preview mode — add a Gemini key for real analysis"}
       </div>
     </div>
   );
 }
 
-function StatCard({ label, value }: { label: string; value: number }) {
+function greeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 18) return "Good afternoon";
+  return "Good evening";
+}
+
+function StatCard({
+  value,
+  label,
+  accent,
+}: {
+  value: number;
+  label: string;
+  accent?: string;
+}) {
   return (
-    <div className="card" style={{ display: "flex", flexDirection: "column", gap: ".2rem" }}>
-      <div style={{ fontSize: "1.8rem", fontWeight: 700 }}>{value}</div>
+    <div className="card">
+      <div className="stat-value" style={accent ? { color: accent } : undefined}>
+        {value}
+      </div>
       <div className="text-sm text-gray-600">{label}</div>
     </div>
   );

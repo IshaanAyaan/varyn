@@ -185,21 +185,21 @@ export function buildAlerts(entries: Entry[]): Alert[] {
 export function labelColor(label: SeverityLabel | string): string {
   switch (label) {
     case "Concerning":
-      return "#ef4444";
+      return "#dc2626";
     case "Moderate":
-      return "#f59e0b";
+      return "#ea7a23";
     case "Mild":
-      return "#eab308";
+      return "#d4a017";
     case "Clear":
-      return "#22c55e";
+      return "#16a34a";
     default:
       return "#64748b";
   }
 }
 
 export function severityColor(score: number): string {
-  if (score >= 70) return "#ef4444";
-  if (score >= 40) return "#f59e0b";
-  if (score >= 20) return "#eab308";
-  return "#22c55e";
+  if (score >= 70) return "#dc2626";
+  if (score >= 45) return "#ea7a23";
+  if (score >= 20) return "#d4a017";
+  return "#16a34a";
 }

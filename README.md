@@ -22,7 +22,10 @@ Visit http://localhost:3000
 
 ## How it works
 
-1. **Sign up / sign in** — demo-only auth stored in `sessionStorage`.
+1. **Sign in** — demo-only auth stored in `sessionStorage`. For quick access,
+   use the **master code `VARYN-DEMO`** (the "Enter demo" button on the login
+   page, or type it into the password field) to jump straight into a shared
+   demo workspace without registering.
 2. **New scan** (`/capture`) — take or upload a photo, pick a body region, give
    the spot a label (e.g. "Mole near wrist"), add symptom notes, and analyze.
    `POST /api/analyze` returns a structured, non-diagnostic observation.

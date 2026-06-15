@@ -201,60 +201,51 @@ export default function CaptureForm({ onSaved }: Props) {
         <div className="grid" style={{ gap: ".75rem" }}>
           <div className="severity-card">
             <div className="severity-header">
-              <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
+              <span className="badge" style={{ color: labelColor(analysis.label) }}>
                 <span
-                  className="severity-badge"
-                  style={{ color: labelColor(analysis.label) }}
-                >
-                  {analysis.label}
-                </span>
-                <span style={{ fontWeight: 600 }}>
-                  Severity {Math.round(analysis.severityScore)}/100
-                </span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
-                <span style={{ fontSize: 12, color: "#64748b" }}>Low</span>
-                <div className="severity-gauge" style={{ width: 180 }}>
-                  <span
-                    className="severity-pointer"
-                    style={{
-                      left: `${Math.max(0, Math.min(100, analysis.severityScore))}%`,
-                      background: labelColor(analysis.label),
-                    }}
-                  />
-                </div>
-                <span style={{ fontSize: 12, color: "#64748b" }}>High</span>
-              </div>
+                  style={{
+                    width: 8, height: 8, borderRadius: "50%",
+                    background: labelColor(analysis.label), display: "inline-block",
+                  }}
+                />
+                {analysis.label}
+              </span>
+              <span className="text-sm text-gray-600">
+                Severity{" "}
+                <strong style={{ color: labelColor(analysis.label) }}>
+                  {Math.round(analysis.severityScore)}
+                </strong>
+                /100
+              </span>
             </div>
-            <p style={{ marginTop: ".6rem", marginBottom: 0 }}>
-              {analysis.description}
-            </p>
+            <div className="sev-track" style={{ marginTop: ".7rem" }}>
+              <div
+                className="sev-fill"
+                style={{
+                  width: `${Math.max(2, Math.min(100, analysis.severityScore))}%`,
+                  background: labelColor(analysis.label),
+                }}
+              />
+            </div>
+            <p style={{ marginTop: ".75rem", marginBottom: 0 }}>{analysis.description}</p>
           </div>
 
           {analysis.concernFlags.length > 0 && (
-            <div className="caution-card">
-              <div className="caution-title">
-                <span role="img" aria-label="flag">
-                  🚩
-                </span>
-                Flagged for your doctor
-              </div>
-              <ul style={{ margin: ".4rem 0 0", paddingLeft: "1.1rem" }}>
+            <div className="caution-card flag">
+              <div className="caution-title">🚩 Flagged for your doctor</div>
+              <div className="row wrap" style={{ gap: ".4rem", marginTop: ".5rem" }}>
                 {analysis.concernFlags.map((f, i) => (
-                  <li key={i}>{f}</li>
+                  <span key={i} className="badge" style={{ background: "#fff" }}>
+                    {f}
+                  </span>
                 ))}
-              </ul>
+              </div>
             </div>
           )}
 
           {analysis.recommendations && (
-            <div className="caution-card">
-              <div className="caution-title">
-                <span role="img" aria-label="info">
-                  💡
-                </span>
-                Suggested next steps
-              </div>
+            <div className="caution-card info">
+              <div className="caution-title">💡 Suggested next steps</div>
               <div style={{ marginTop: ".35rem" }}>{analysis.recommendations}</div>
             </div>
           )}
